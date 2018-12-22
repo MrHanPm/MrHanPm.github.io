@@ -1,0 +1,216 @@
+﻿<!DOCTYPE html>
+<html style="font-size: 40px;">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>刮奖</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="layoutmode" content="standard">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="renderer" content="webkit">
+<meta name="wap-font-scale" content="no">
+<meta content="telephone=no" name="format-detection">
+<meta http-equiv="Pragma" content="no-cache">
+<script type="text/javascript">
+	var _htmlFontSize = (function () {
+		var clientWidth = document.documentElement ? document.documentElement.clientWidth : document.body.clientWidth;
+		if (clientWidth > 640) clientWidth = 640;
+		document.documentElement.style.fontSize = clientWidth * 1 / 16 + "px";
+		return clientWidth * 1 / 16;
+	})();
+</script>
+<link rel="stylesheet" type="text/css" href="css/base.min.css">
+
+</head>
+<body class="main_box">
+<div class="pay_box"></div>
+<div class="box">
+    <!-- <div class="bg_in">
+        <div class="title">•&nbsp;刮奖区&nbsp;•</div>
+    </div> -->
+    <div class="Paytitle">•已获得<b class="pnum">0</b>元现金•</div>
+    <div class="content">
+        <div id="mask_img_bg"><span class="cont-span"></span>
+        </div>
+        <img id="redux" src="images/layer.png">
+    </div>
+    <!--次数-->
+    <div class="hint-num">
+        <h4>今日你还有 <strong class="clicknum">0</strong> 次刮奖机会</h4>
+    </div>
+</div>
+<div class="hint-show">
+    <div class="notifys">恭喜中奖</div>
+    <img class="colour-img" src="images/colour.png">
+    <span class="prize-span"></span>
+    <div class="gugule">
+        <a class="getMns">立即提现</a>
+        <div class="tryAg">再刮一次</div>
+    </div>
+</div>
+
+<div class="mask"></div>
+
+<div class="Btcontent">
+    <span>立即提现</span>
+    <img src="icons/finger.png" alt="" style="height: 1rem;vertical-align: middle;">
+</div>
+<div id="scrollDiv">
+    <ul id="scrollBox"></ul>
+</div>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.eraser.js"></script>
+<script type="text/javascript">
+    // 提现跳转路径
+    var SherUrl = 'getpay.html';
+    $(window).load(function () {
+        var imgarr = ["50", "30", "20", "10", "5", "2", "再接再厉"];
+        var clickNum = localStorage.getItem("CLICKNUM") || 10;
+        var Pays = localStorage.getItem("PAYS") || 0;
+        $(".pnum").text(Pays);
+        if(clickNum > 0){
+            $('.clicknum').text(clickNum);
+            $('#redux').eraser({
+                size: 60,   //设置橡皮擦大小
+                completeRatio: .5, //设置擦除面积比例
+                completeFunction: showResetButton   //大于擦除面积比例触发函数
+            });
+            /*获取随机数*/
+            var info = parseInt(Math.random() * 700);
+            var thanks, arrinfo, arrtxt;
+            var isNulls = false;
+            console.log(info);
+            /*通过判断设置出现概率*/
+            if (info < 60) {
+                arrinfo = imgarr[0];
+                thanks = true;
+            } else if (info > 60 && info <= 180) {
+                arrinfo = imgarr[1];
+                thanks = true;
+            } else if (info > 180 && info <= 300) {
+                arrinfo = imgarr[2];
+                thanks = true;
+            } else if (info > 300 && info <= 400) {
+                arrinfo = imgarr[3];
+                thanks = true;
+            } else if (info > 400 && info <= 500) {
+                arrinfo = imgarr[4];
+                thanks = true;
+            } else if (info > 500 && info <= 620) {
+                arrinfo = imgarr[5];
+                thanks = true;
+            } else if (info > 620) {
+                arrinfo = imgarr[6];
+                thanks = false;
+                isNulls = true;
+            }
+            if (info < 620) {
+                arrtxt = "¥ " + arrinfo + " 元";
+                $("#mask_img_bg>span").text(arrtxt);
+            } else {
+                $("#mask_img_bg>span").text(arrinfo);
+            }
+
+            function showResetButton() {
+                clickNum--;
+                $('.clicknum').text(clickNum);
+                localStorage.setItem("CLICKNUM", clickNum);
+                if (info < 620) {
+                    $(".prize-span").text('现 金 ' + arrtxt);
+                } else {
+                    $(".prize-span").text(arrinfo);
+                }
+                if (thanks) {
+                    if (clickNum < 1) {
+                        $(".tryAg").hide();
+                    }
+                    $(".main_box .hint-show,.main_box .mask").fadeIn(300);
+                    var Qians = Number(Pays) + Number(arrinfo);
+                    $(".pnum").text(Qians);
+                    localStorage.setItem("PAYS", Qians);
+                }
+                if (isNulls) {
+                    $(".main_box .hint-show,.main_box .mask").fadeIn(300);
+                    if (localStorage.getItem("PAYS") < 2) {
+                        $(".getMns").hide();
+                    }
+                    $(".notifys").text("大吉大利");
+                }
+            }
+        }else {
+            // 跳转路径
+            location.href = SherUrl;
+        }
+        $(".Btcontent").click(function () {
+            if (localStorage.getItem("PAYS") < 2) {
+                alert("您还没有提现额度");
+            } else {
+                location.href = SherUrl;
+            }
+        });
+    });
+    // 预备头像
+    // var Ajax = "http://";
+    // var htmlobj = $.ajax({ url: Ajax, async: false });
+    // console.log(htmlobj.responseText);
+    // 滚动插件 
+    (function ($) {
+        $.fn.extend({
+            Scroll: function (opt, callback) {
+                //参数初始化 
+                if (!opt) var opt = {};
+                var _this = this.eq(0).find("ul:first");
+                var lineH = _this.find("li:first").height(), //获取行高 
+                    line = opt.line ? parseInt(opt.line, 10) : parseInt(this.height() / lineH, 10), //每次滚动的行数，默认为一屏，即父容器高度 
+                    speed = opt.speed ? parseInt(opt.speed, 10) : 500, //卷动速度，数值越大，速度越慢（毫秒） 
+                    timer = opt.timer ? parseInt(opt.timer, 10) : 3000; //滚动的时间间隔（毫秒） 
+                if (line == 0) line = 1;
+                var upHeight = 0 - line * lineH;
+                var timerID;
+                //滚动函数 
+                scrollUp = function () {
+                    _this.animate({
+                        marginTop: upHeight
+                    }, speed, function () {
+                        for (i = 1; i <= line; i++) {
+                            var litxt = Math.random().toString(36).substr(10) + "**** 成功提现" + (Math.random().toFixed(2) * 200 + 100);
+                            _this.find("li:first").text("恭喜 " + litxt + "元");
+                            _this.find("li:first").appendTo(_this);
+                        }
+                        _this.css({ marginTop: 0 });
+                    });
+                }
+                // 鼠标事件绑定 
+                // _this.hover(function () {
+                //     clearInterval(timerID);
+                // }, function () {
+                //     timerID = setInterval("scrollUp()", timer);
+                // }).mouseout();
+                timerID = setInterval("scrollUp()", timer);
+            }
+        })
+    })(jQuery);
+    $(document).ready(function () {
+        [0,1,2].forEach(element => {
+            var litxt = Math.random().toString(36).substr(10) + "**** 成功提现" + (Math.random().toFixed(2) * 200 + 100);
+            $("#scrollBox").append("<li>恭喜 " + litxt + "元</li>");
+        });
+        $("#scrollDiv").Scroll({ line: 1, speed: 600, timer: 1800 });
+
+        $(".getMns").click(function () {
+            if (localStorage.getItem("PAYS") < 2) {
+                window.location.href = location.href + '?time=' + ((new Date()).getTime());
+            } else {
+                location.href = SherUrl;
+            }
+        });
+        $(".tryAg").click(function () {
+            window.location.href = location.href + '?time=' + ((new Date()).getTime());
+        });
+    });
+</script>
+
+</body>
+</html>
